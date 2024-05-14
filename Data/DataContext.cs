@@ -1,9 +1,11 @@
 ﻿using MBBE.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MBBE.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<User>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) 
         {
@@ -12,7 +14,6 @@ namespace MBBE.Data
 
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -21,10 +22,24 @@ namespace MBBE.Data
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Promotions> Promotions { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        public DbSet<Role> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+            List<IdentityRole> roles = new List<IdentityRole>
+            {
+                new IdentityRole
+                {
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
+                },
+                new IdentityRole
+                {
+                    Name = "User",
+                    NormalizedName = "USER"
+                },
+            };
+            modelBuilder.Entity<IdentityRole>().HasData(roles);
             modelBuilder.Entity<ProductCategory>()
                 .HasKey(pc => new { pc.CategoryId, pc.ProductID });
             modelBuilder.Entity<ProductCategory>()
@@ -35,10 +50,6 @@ namespace MBBE.Data
                 .HasOne(p => p.Category)
                 .WithMany(pc => pc.ProductCategories)
                 .HasForeignKey(c => c.CategoryId);
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.Cart)
-                .WithOne(c => c.User)
-                .HasForeignKey<Cart>(c => c.UserId);
             modelBuilder.Entity<Promotions>()
                 .HasKey(p => p.PromotionId);
         }
