@@ -1,5 +1,6 @@
 ﻿using MBBE.Interfaces;
 using MBBE.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MBBE.Controlers
@@ -16,6 +17,7 @@ namespace MBBE.Controlers
         }
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Product>))]
 
         public IActionResult GetProducts() {
