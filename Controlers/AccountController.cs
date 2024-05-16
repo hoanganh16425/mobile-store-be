@@ -1,6 +1,8 @@
 ﻿using MBBE.Dtos.Account;
 using MBBE.Interfaces;
+using MBBE.Mappers;
 using MBBE.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +16,25 @@ namespace MBBE.Controlers
         private readonly UserManager<User> _userManager;
         private readonly ITokenService _tokenService;
         private readonly SignInManager<User> _signInManager;
-        public AccountController(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager)
+        private readonly IAccountRepository _accountRepository;
+        public AccountController(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager, IAccountRepository accountRepository)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _signInManager = signInManager;
+            _accountRepository = accountRepository;
+        }
+
+        [HttpGet]
+        [Authorize]
+
+        public IActionResult GetAllUser()
+        {
+            var userList = _accountRepository.GetUsers();
+            var userDto = userList.Select(s => s.ToAccountDto()).ToList();
+            if (!ModelState.IsValid)
+                return NotFound(ModelState);
+            return Ok(userDto);
         }
 
         [HttpPost("login")]
@@ -44,7 +60,7 @@ namespace MBBE.Controlers
         {
             try
             {
-                if(!ModelState.IsValid) 
+                if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 var user = new User
                 {
@@ -53,10 +69,10 @@ namespace MBBE.Controlers
                 };
                 var createUser = await _userManager.CreateAsync(user, registerDto.Password);
 
-                if(createUser.Succeeded)
+                if (createUser.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(user, "User");
-                    if(roleResult.Succeeded)
+                    if (roleResult.Succeeded)
                     {
                         return Ok(
                             new NewUserDto
@@ -70,17 +86,19 @@ namespace MBBE.Controlers
                     else
                     {
                         return StatusCode(500, roleResult.Errors);
-                    } 
-                        
+                    }
+
                 }
                 else
                 {
                     return StatusCode(500, createUser.Errors);
-                } 
-            }catch(Exception ex)
+                }
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex);
             }
         }
+        ///[HttpGet]
     }
 }
