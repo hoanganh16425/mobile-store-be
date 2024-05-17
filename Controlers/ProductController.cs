@@ -53,5 +53,18 @@ namespace MBBE.Controlers
                 return NotFound(product);
             return Ok(product);
         }
+
+        [HttpPut]
+        [Route("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProductById([FromRoute] Guid id, [FromBody] UpdateStockRequestDto updateStockRequestDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var product = await _productRepository.UpdateProductAsync(id, updateStockRequestDto);
+            if (product == null)
+                return NotFound(product);
+            return Ok(product);
+        }
     }
 }

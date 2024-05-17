@@ -27,4 +27,14 @@ namespace MBBE.Dtos.Product
         public int StockQuantity { get; set; }
         public string? Brand { get; set; }
     }
+
+    public class UpdateStockRequestDto
+    {
+        public required string Name { get; set; }
+        public string? ProductImage { get; set; }
+        public string? Description { get; set; }
+        public int Price { get; set; }
+        public int StockQuantity { get; set; }
+        public string? Brand { get; set; }
+    }
 }
