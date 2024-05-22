@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MBBE.Data
 {
-    public class DataContext : IdentityDbContext<User>
+    public class DataContext : IdentityDbContext<User, Role, string, IdentityUserClaim<string>, UserRoleMap, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) 
         {
@@ -52,6 +52,20 @@ namespace MBBE.Data
                 .HasForeignKey(c => c.CategoryId);
             modelBuilder.Entity<Promotions>()
                 .HasKey(p => p.PromotionId);
+            modelBuilder.Entity<UserRoleMap>()
+                .HasKey(ur => new { ur.UserId, ur.RoleId });
+            modelBuilder.Entity<UserRoleMap>()
+                .HasOne(ur => ur.Role)
+                    .WithMany(r => r.UserRoleMaps)
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired();
+            modelBuilder.Entity<UserRoleMap>()
+                .HasOne(ur => ur.User)
+                    .WithMany(r => r.UserRoleMaps)
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
+            modelBuilder.Entity<User>()
+                .HasIndex(x => x.Phone).IsUnique();
         }
     }
 }

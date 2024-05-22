@@ -17,12 +17,14 @@ namespace MBBE.Controlers
         private readonly ITokenService _tokenService;
         private readonly SignInManager<User> _signInManager;
         private readonly IAccountRepository _accountRepository;
-        public AccountController(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager, IAccountRepository accountRepository)
+        private readonly RoleManager<Role> _roleManager;
+        public AccountController(UserManager<User> userManager, RoleManager<Role> roleManager, ITokenService tokenService, SignInManager<User> signInManager, IAccountRepository accountRepository)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _signInManager = signInManager;
             _accountRepository = accountRepository;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -62,16 +64,12 @@ namespace MBBE.Controlers
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
-                var user = new User
-                {
-                    UserName = registerDto.Username,
-                    Email = registerDto.Email,
-                };
+                var user = registerDto.ToRegisterDto();
                 var createUser = await _userManager.CreateAsync(user, registerDto.Password);
 
                 if (createUser.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(user, "User");
+                    var roleResult = await _userManager.AddToRoleAsync(user, registerDto.Role);
                     if (roleResult.Succeeded)
                     {
                         return Ok(
