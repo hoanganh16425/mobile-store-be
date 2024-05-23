@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MBBE.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240522091822_update-phone-string")]
-    partial class updatephonestring
+    [Migration("20240523044056_innitial-database")]
+    partial class innitialdatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -357,7 +357,7 @@ namespace MBBE.Migrations
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -398,9 +398,6 @@ namespace MBBE.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("Phone")
-                        .IsUnique();
-
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
@@ -440,13 +437,13 @@ namespace MBBE.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3e5a755d-a0c6-4ed9-8a77-5e0afa82802b",
+                            Id = "cdef0cd5-24b0-4870-a7b7-320031828dc0",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "bf245843-fb89-488c-8741-44d01f0f8564",
+                            Id = "0ee25118-0da1-4f67-9f72-014e9997da83",
                             Name = "User",
                             NormalizedName = "USER"
                         });

@@ -20,6 +20,7 @@ namespace MBBE.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
+        public DbSet<UserRoleMap> UserRoleMaps { get; set; }
         public DbSet<Promotions> Promotions { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
@@ -64,8 +65,6 @@ namespace MBBE.Data
                     .WithMany(r => r.UserRoleMaps)
                     .HasForeignKey(ur => ur.UserId)
                     .IsRequired();
-            modelBuilder.Entity<User>()
-                .HasIndex(x => x.Phone).IsUnique();
         }
     }
 }

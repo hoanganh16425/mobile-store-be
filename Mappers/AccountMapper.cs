@@ -14,6 +14,10 @@ namespace MBBE.Mappers
                 Email = userModel.Email,
                 Dateregister = userModel.Dateregister,
                 ShippingAddress = userModel.ShippingAddress,
+                EmergencyContact = userModel.EmergencyContact,
+                BankAccount = userModel.BankAccount,
+                BankName = userModel.BankName,
+                Dob = userModel.Dob
             };
         }
         public static User ToRegisterDto(this RegisterDto registerDto)

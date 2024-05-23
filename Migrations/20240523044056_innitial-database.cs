@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MBBE.Migrations
 {
     /// <inheritdoc />
-    public partial class adduserrole : Migration
+    public partial class innitialdatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,18 +35,18 @@ namespace MBBE.Migrations
                     ShippingAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Citizenship = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Dob = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmergencyContact = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmergencyContact = table.Column<int>(type: "int", nullable: false),
                     BankName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AnnualLeave = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MedicalLeave = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UrgentLeave = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SpecialLeave = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Marriage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Hospitalisation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Maternity = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UnpaidLeave = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<int>(type: "int", nullable: false),
+                    AnnualLeave = table.Column<int>(type: "int", nullable: false),
+                    MedicalLeave = table.Column<int>(type: "int", nullable: false),
+                    UrgentLeave = table.Column<int>(type: "int", nullable: false),
+                    SpecialLeave = table.Column<int>(type: "int", nullable: false),
+                    Marriage = table.Column<int>(type: "int", nullable: false),
+                    Hospitalisation = table.Column<int>(type: "int", nullable: false),
+                    Maternity = table.Column<int>(type: "int", nullable: false),
+                    UnpaidLeave = table.Column<int>(type: "int", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Dateregister = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -394,8 +394,8 @@ namespace MBBE.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "89b812c7-00d4-4d11-896b-f8777e248afe", null, "Admin", "ADMIN" },
-                    { "f0a1352a-c906-4da8-92fd-10edb12e2700", null, "User", "USER" }
+                    { "0ee25118-0da1-4f67-9f72-014e9997da83", null, "User", "USER" },
+                    { "cdef0cd5-24b0-4870-a7b7-320031828dc0", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -429,12 +429,6 @@ namespace MBBE.Migrations
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_Phone",
-                table: "AspNetUsers",
-                column: "Phone",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

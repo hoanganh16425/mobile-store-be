@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static MBBE.Common.Constant.Enum;
 
 namespace MBBE.Controlers
 {
@@ -17,26 +18,44 @@ namespace MBBE.Controlers
         private readonly ITokenService _tokenService;
         private readonly SignInManager<User> _signInManager;
         private readonly IAccountRepository _accountRepository;
-        private readonly RoleManager<Role> _roleManager;
-        public AccountController(UserManager<User> userManager, RoleManager<Role> roleManager, ITokenService tokenService, SignInManager<User> signInManager, IAccountRepository accountRepository)
+        public AccountController(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager, IAccountRepository accountRepository)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _signInManager = signInManager;
             _accountRepository = accountRepository;
-            _roleManager = roleManager;
         }
 
         [HttpGet]
         [Authorize]
 
-        public IActionResult GetAllUser()
+        public async Task<IActionResult> GetAllUser()
         {
             var userList = _accountRepository.GetUsers();
-            var userDto = userList.Select(s => s.ToAccountDto()).ToList();
+            var userDtos = new List<AccountDto>();
+
+            foreach (var user in userList)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var userDto = new AccountDto
+                {
+                    UserName = user.UserName,
+                    PhoneNumber = user.Phone,
+                    Email = user.Email,
+                    Dateregister = user.Dateregister,
+                    ShippingAddress = user.ShippingAddress,
+                    EmergencyContact = user.EmergencyContact,
+                    BankAccount = user.BankAccount,
+                    BankName = user.BankName,
+                    Dob = user.Dob,
+                    Roles = roles.Select(r => Enum.Parse<UserRoles>(r)).ToList(),
+                };
+
+                userDtos.Add(userDto);
+            }
             if (!ModelState.IsValid)
                 return NotFound(ModelState);
-            return Ok(userDto);
+            return Ok(userDtos);
         }
 
         [HttpPost("login")]
@@ -69,7 +88,7 @@ namespace MBBE.Controlers
 
                 if (createUser.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(user, registerDto.Role);
+                    var roleResult = await _userManager.AddToRoleAsync(user, registerDto.Role.ToString());
                     if (roleResult.Succeeded)
                     {
                         return Ok(

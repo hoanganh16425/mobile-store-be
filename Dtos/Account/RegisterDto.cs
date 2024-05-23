@@ -43,6 +43,6 @@ namespace MBBE.Dtos.Account
         [Required]
         public string Phone { get; set; } = string.Empty;
         [Required]
-        public string Role { get; set; }
+        public UserRoles Role { get; set; }
     }
 }
