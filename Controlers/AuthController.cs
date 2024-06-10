@@ -52,23 +52,21 @@ namespace MBBE.Controlers
 
                 if (createUser.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(user, registerDto.Role.ToString());
-                    if (roleResult.Succeeded)
+                    foreach (var roleName in registerDto.Role)
                     {
-                        return Ok(
-                            new NewUserDto
-                            {
-                                UserName = user.UserName,
-                                Email = user.Email,
-                                Token = _tokenService.CreateToken(user)
-                            }
-                       );
-                    }
-                    else
-                    {
-                        return StatusCode(500, roleResult.Errors);
+                    var roleResult = await _userManager.AddToRoleAsync(user, roleName.ToString());
+                        if (!roleResult.Succeeded)
+                        {
+                            return StatusCode(500, roleResult.Errors);
+                        }
                     }
 
+                    return Ok(new NewUserDto
+                        {
+                            UserName = user.UserName,
+                            Email = user.Email,
+                            Token = _tokenService.CreateToken(user)
+                        });
                 }
                 else
                 {
