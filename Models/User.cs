@@ -18,7 +18,6 @@ namespace MBBE.Models
         public int Hospitalisation { get; set; }
         public int Maternity { get; set; }
         public int UnpaidLeave { get; set; }
-        public string Phone { get; set; } = string.Empty;
         public DateTime Dateregister { get; set; } = DateTime.Now;
 
         public ICollection<Order>? Orders { get; set; }

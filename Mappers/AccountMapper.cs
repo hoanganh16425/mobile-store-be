@@ -10,7 +10,7 @@ namespace MBBE.Mappers
             return new AccountDto
             {
                 UserName = userModel.UserName,
-                PhoneNumber = userModel.Phone,
+                PhoneNumber = userModel.PhoneNumber = string.Empty,
                 Email = userModel.Email,
                 Dateregister = userModel.Dateregister,
                 ShippingAddress = userModel.ShippingAddress,
