@@ -38,7 +38,7 @@ namespace MBBE.Controlers
                 var userDto = new AccountDto
                 {
                     UserName = user.UserName,
-                    PhoneNumber = user.PhoneNumber = string.Empty,
+                    PhoneNumber = user.PhoneNumber,
                     Email = user.Email,
                     Dateregister = user.Dateregister,
                     ShippingAddress = user.ShippingAddress,
