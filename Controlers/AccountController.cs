@@ -13,23 +13,19 @@ namespace MBBE.Controlers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly ITokenService _tokenService;
-        private readonly SignInManager<User> _signInManager;
         private readonly IAccountRepository _accountRepository;
-        public AccountController(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager, IAccountRepository accountRepository)
+        public AccountController(UserManager<User> userManager, IAccountRepository accountRepository)
         {
             _userManager = userManager;
-            _tokenService = tokenService;
-            _signInManager = signInManager;
             _accountRepository = accountRepository;
         }
 
         [HttpGet]
         [Authorize]
 
-        public async Task<IActionResult> GetAllUser()
+        public async Task<IActionResult> GetAllUser([FromQuery] AccountQueryObject query)
         {
-            var userList = _accountRepository.GetUsers();
+            var userList = _accountRepository.GetUsers(query);
             var userDtos = new List<AccountDto>();
 
             foreach (var user in userList)
