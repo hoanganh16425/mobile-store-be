@@ -14,9 +14,31 @@ namespace MBBE.Repository
             _dataContext = dataContext;
         }
 
-        public List<User> GetUsers()
+        public List<User> GetUsers(AccountQueryObject query)
         {
-            return _dataContext.Users.OrderBy(u => u.Id).ToList();
+            var account =  _dataContext.Users.AsQueryable();
+            if(!string.IsNullOrEmpty(query.UserName))
+            {
+                account = account.Where(a => a.UserName.Contains(query.UserName));
+            }
+            if (!string.IsNullOrEmpty(query.Email))
+            {
+                account = account.Where(a => a.Email.Contains(query.Email));
+            }
+            if (!string.IsNullOrEmpty(query.ShippingAddress))
+            {
+                account = account.Where(a => a.ShippingAddress.Contains(query.ShippingAddress));
+            }
+            if (!string.IsNullOrEmpty(query.PhoneNumber))
+            {
+                account = account.Where(a => a.PhoneNumber.Contains(query.PhoneNumber));
+            }
+            if (!string.IsNullOrEmpty(query.Citizenship))
+            {
+                account = account.Where(a => a.Citizenship.Contains(query.Citizenship));
+            }
+
+            return account.ToList();
         }
     }
 }

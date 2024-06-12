@@ -15,4 +15,14 @@ namespace MBBE.Dtos.Account
         public DateTime Dateregister { get; set; }
         public IList<UserRoles> Roles { get; set; }
     }
+
+    public class AccountQueryObject
+    {
+        public string? UserName { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Email { get; set; }
+        public string? ShippingAddress { get; set; }
+        public string? Citizenship { get; set; }
+        public IList<UserRoles>? Roles { get; set; }
+    }
 }

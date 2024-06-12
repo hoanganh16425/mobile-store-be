@@ -5,6 +5,6 @@ namespace MBBE.Interfaces
 {
     public interface IAccountRepository
     {
-        List<User> GetUsers();
+        List<User> GetUsers(AccountQueryObject query);
     }
 }
