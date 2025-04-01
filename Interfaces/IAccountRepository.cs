@@ -7,7 +7,7 @@ namespace MBBE.Interfaces
     {
         List<User> GetUsers(AccountQueryObject query);
         Task<User> GetUserDetail(string userId);
-
-        Task<User> UpdateUser(string userId, UpdateAccountDto updateAccount);
+        Task<User?> GetUserByIdAsync(string userId);
+        Task<bool> UpdateUserAsync(User yuser, string? newPassword, List<string> roles);
     }
 }

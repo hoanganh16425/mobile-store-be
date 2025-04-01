@@ -3,22 +3,28 @@ using MBBE.Dtos.Account;
 using MBBE.Interfaces;
 using MBBE.Mappers;
 using MBBE.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static MBBE.Common.Constant.Enum;
 
 namespace MBBE.Repository
 {
-    public class AccountRepository: IAccountRepository
+    public class AccountRepository : IAccountRepository
     {
         private readonly DataContext _dataContext;
-        public AccountRepository(DataContext dataContext) {
+        private readonly UserManager<User> _userManager;
+
+        public AccountRepository(DataContext dataContext, UserManager<User> userManager)
+        {
             _dataContext = dataContext;
+            _userManager = userManager;
         }
 
         public List<User> GetUsers(AccountQueryObject query)
         {
-            var account =  _dataContext.Users.AsQueryable();
-            if(!string.IsNullOrEmpty(query.UserName))
+            var account = _dataContext.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(query.UserName))
             {
                 account = account.Where(a => a.UserName.Contains(query.UserName));
             }
@@ -42,27 +48,53 @@ namespace MBBE.Repository
             return account.ToList();
         }
 
-        public async Task<User> GetUserDetail(string userId)
+        public async Task<User?> GetUserDetail(string userId)
         {
             return await _dataContext.Users.FirstOrDefaultAsync(user => user.Id == userId);
         }
 
-        public async Task<User> UpdateUser(string userId, UpdateAccountDto updateAccount)
+        public async Task<User?> GetUserByIdAsync(string userId)
         {
-            var userDetail = await _dataContext.Users.FirstOrDefaultAsync(user => user.Id == userId);
-            if (userDetail == null)
-            {
-                return null;
-            }
-            userDetail.UserName = updateAccount.Username;
-            userDetail. = updateAccount.Username;
-            userDetail.UserName = updateAccount.Username;
-            userDetail.UserName = updateAccount.Username;
-            userDetail.UserName = updateAccount.Username;
-            userDetail.UserName = updateAccount.Username;
-            userDetail.UserName = updateAccount.Username;
-            userDetail.UserName = updateAccount.Username;
-            userDetail.UserName = updateAccount.Username;
+            return await _userManager.FindByIdAsync(userId.ToString());
         }
+
+        public async Task<bool> UpdateUserAsync(User user, string? newPassword, List<string> roleNames)
+{
+    using (var transaction = await _dataContext.Database.BeginTransactionAsync())
+    {
+        try
+        {
+            // Update roles
+            var existingRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, existingRoles);
+
+            var roleResult = await _userManager.AddToRolesAsync(user, roleNames);
+            if (!roleResult.Succeeded)
+                return false;
+
+            // Update password if provided
+            if (!string.IsNullOrEmpty(newPassword))
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var passwordResult = await _userManager.ResetPasswordAsync(user, token, newPassword);
+                if (!passwordResult.Succeeded)
+                    return false;
+            }
+
+            // Save user updates
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                return false;
+
+            await transaction.CommitAsync();
+            return true;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
+    }
+}
     }
 }

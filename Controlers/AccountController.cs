@@ -19,7 +19,7 @@ namespace MBBE.Controlers
             _userManager = userManager;
             _accountRepository = accountRepository;
         }
-
+ 
         [HttpGet]
         [Authorize]
 
@@ -86,9 +86,18 @@ namespace MBBE.Controlers
         [HttpPut]
         [Route("{id}")]
         [Authorize]
-        public  async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] AccountQueryObject query)
-        {
+       public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UpdateAccountDto dto)
+{
+    var user = await _accountRepository.GetUserDetail(id);
+    if (user == null) return NotFound("User not found");
 
-        }
+    var roleNames = dto.Role.Select(role => Enum.GetName(typeof(UserRoles), role)).ToList();
+
+    bool updated = await _accountRepository.UpdateUserAsync(user, dto.Password, roleNames);
+    
+    if (!updated) return BadRequest("Failed to update user");
+
+    return Ok("User updated successfully");
+}
     }
 }
