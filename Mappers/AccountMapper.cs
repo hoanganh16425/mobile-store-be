@@ -41,7 +41,7 @@ namespace MBBE.Mappers
                 Hospitalisation = registerDto.Hospitalisation,
                 Maternity = registerDto.Maternity,
                 UnpaidLeave = registerDto.UnpaidLeave,
-    };
+            };
         }
 
     }

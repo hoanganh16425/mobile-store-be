@@ -34,6 +34,7 @@ namespace MBBE.Controlers
                 var userDto = new AccountDto
                 {
                     UserName = user.UserName,
+                    Id = user.Id,
                     PhoneNumber = user.PhoneNumber,
                     Email = user.Email,
                     Dateregister = user.Dateregister,
@@ -50,6 +51,44 @@ namespace MBBE.Controlers
             if (!ModelState.IsValid)
                 return NotFound(ModelState);
             return Ok(userDtos);
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetUserDetail([FromRoute] string id)
+        {
+            var user = await _accountRepository.GetUserDetail(id);
+            if (user == null)
+            {
+                return NotFound(user);
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            var userDto = new AccountDto
+            {
+                UserName = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
+                Dateregister = user.Dateregister,
+                ShippingAddress = user.ShippingAddress,
+                EmergencyContact = user.EmergencyContact,
+                BankAccount = user.BankAccount,
+                BankName = user.BankName,
+                Dob = user.Dob,
+                Roles = roles.Select(r => Enum.Parse<UserRoles>(r)).ToList(),
+            };
+
+            if (!ModelState.IsValid)
+                return NotFound(ModelState);
+            return Ok(userDto);
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        [Authorize]
+        public  async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] AccountQueryObject query)
+        {
+
         }
     }
 }

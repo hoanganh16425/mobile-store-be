@@ -4,6 +4,7 @@ using MBBE.Interfaces;
 using MBBE.Mappers;
 using MBBE.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace MBBE.Repository
 {
@@ -39,6 +40,29 @@ namespace MBBE.Repository
             }
 
             return account.ToList();
+        }
+
+        public async Task<User> GetUserDetail(string userId)
+        {
+            return await _dataContext.Users.FirstOrDefaultAsync(user => user.Id == userId);
+        }
+
+        public async Task<User> UpdateUser(string userId, UpdateAccountDto updateAccount)
+        {
+            var userDetail = await _dataContext.Users.FirstOrDefaultAsync(user => user.Id == userId);
+            if (userDetail == null)
+            {
+                return null;
+            }
+            userDetail.UserName = updateAccount.Username;
+            userDetail. = updateAccount.Username;
+            userDetail.UserName = updateAccount.Username;
+            userDetail.UserName = updateAccount.Username;
+            userDetail.UserName = updateAccount.Username;
+            userDetail.UserName = updateAccount.Username;
+            userDetail.UserName = updateAccount.Username;
+            userDetail.UserName = updateAccount.Username;
+            userDetail.UserName = updateAccount.Username;
         }
     }
 }
