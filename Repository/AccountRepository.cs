@@ -116,20 +116,7 @@ namespace MBBE.Repository
 
                     await transaction.CommitAsync();
 
-                    var userDto = new AccountDto
-                    {
-                        UserName = user.UserName,
-                        PhoneNumber = user.PhoneNumber,
-                        Email = user.Email,
-                        Dateregister = user.Dateregister,
-                        ShippingAddress = user.ShippingAddress,
-                        EmergencyContact = user.EmergencyContact,
-                        BankAccount = user.BankAccount,
-                        BankName = user.BankName,
-                        Dob = user.Dob,
-                        Id = user.Id,
-                        Roles = roles.Select(r => Enum.Parse<UserRoles>(r)).ToList(),
-                    };
+                    var userDto = await AccountMapper.ToAccountDto(user, _userManager);
 
                     return (true, "User updated successfully", userDto);
                 }

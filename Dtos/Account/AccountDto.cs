@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MBBE.Models;
+using System.ComponentModel.DataAnnotations;
 using static MBBE.Common.Constant.Enum;
 
 namespace MBBE.Dtos.Account
@@ -16,6 +17,15 @@ namespace MBBE.Dtos.Account
         public string BankAccount { get; set; } = string.Empty;
         public DateTime Dateregister { get; set; }
         public IList<UserRoles> Roles { get; set; }
+        public string Citizenship { get; set; } = string.Empty;
+        public int AnnualLeave { get; set; }
+        public int MedicalLeave { get; set; }
+        public int UrgentLeave { get; set; }
+        public int SpecialLeave { get; set; }
+        public int Marriage { get; set; }
+        public int Hospitalisation { get; set; }
+        public int Maternity { get; set; }
+        public int UnpaidLeave { get; set; }
     }
 
     public class AccountQueryObject
@@ -31,7 +41,7 @@ namespace MBBE.Dtos.Account
     public class UpdateAccountDto
     {
         [Required]
-        public string Username { get; set; } = string.Empty; 
+        public string Username { get; set; } = string.Empty;
         [Required]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;

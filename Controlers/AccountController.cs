@@ -4,6 +4,7 @@ using MBBE.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MBBE.Mappers;
 using static MBBE.Common.Constant.Enum;
 
 namespace MBBE.Controlers
@@ -26,28 +27,7 @@ namespace MBBE.Controlers
         public async Task<IActionResult> GetAllUser([FromQuery] AccountQueryObject query)
         {
             var userList = _accountRepository.GetUsers(query);
-            var userDtos = new List<AccountDto>();
-
-            foreach (var user in userList)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                var userDto = new AccountDto
-                {
-                    UserName = user.UserName,
-                    Id = user.Id,
-                    PhoneNumber = user.PhoneNumber,
-                    Email = user.Email,
-                    Dateregister = user.Dateregister,
-                    ShippingAddress = user.ShippingAddress,
-                    EmergencyContact = user.EmergencyContact,
-                    BankAccount = user.BankAccount,
-                    BankName = user.BankName,
-                    Dob = user.Dob,
-                    Roles = roles.Select(r => Enum.Parse<UserRoles>(r)).ToList(),
-                };
-
-                userDtos.Add(userDto);
-            }
+            var userDtos = await AccountMapper.MapAccountDtos(userList, _userManager);
             if (!ModelState.IsValid)
                 return NotFound(ModelState);
             return Ok(userDtos);
@@ -63,21 +43,7 @@ namespace MBBE.Controlers
             {
                 return NotFound(user);
             }
-            var roles = await _userManager.GetRolesAsync(user);
-            var userDto = new AccountDto
-            {
-                UserName = user.UserName,
-                PhoneNumber = user.PhoneNumber,
-                Email = user.Email,
-                Dateregister = user.Dateregister,
-                ShippingAddress = user.ShippingAddress,
-                EmergencyContact = user.EmergencyContact,
-                BankAccount = user.BankAccount,
-                BankName = user.BankName,
-                Dob = user.Dob,
-                Id = user.Id,
-                Roles = roles.Select(r => Enum.Parse<UserRoles>(r)).ToList(),
-            };
+            var userDto = await AccountMapper.ToAccountDto(user, _userManager);
 
             if (!ModelState.IsValid)
                 return NotFound(ModelState);
@@ -98,7 +64,7 @@ namespace MBBE.Controlers
 
             if (!result.Success) return BadRequest(new { error = result.ErrorMessage });
 
-            return Ok(new { message = result.ErrorMessage, user = result.user });
+            return Ok(result.user);
         }
     }
 }
