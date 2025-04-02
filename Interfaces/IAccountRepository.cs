@@ -8,6 +8,6 @@ namespace MBBE.Interfaces
         List<User> GetUsers(AccountQueryObject query);
         Task<User> GetUserDetail(string userId);
         Task<User?> GetUserByIdAsync(string userId);
-        Task<bool> UpdateUserAsync(User yuser, string? newPassword, List<string> roles);
+        Task<(bool Success, string ErrorMessage, AccountDto? user)> UpdateUserAsync(User user, UpdateAccountDto? dto, List<string> roleNames);
     }
 }

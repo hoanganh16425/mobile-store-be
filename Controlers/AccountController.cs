@@ -19,7 +19,7 @@ namespace MBBE.Controlers
             _userManager = userManager;
             _accountRepository = accountRepository;
         }
- 
+
         [HttpGet]
         [Authorize]
 
@@ -75,6 +75,7 @@ namespace MBBE.Controlers
                 BankAccount = user.BankAccount,
                 BankName = user.BankName,
                 Dob = user.Dob,
+                Id = user.Id,
                 Roles = roles.Select(r => Enum.Parse<UserRoles>(r)).ToList(),
             };
 
@@ -86,18 +87,18 @@ namespace MBBE.Controlers
         [HttpPut]
         [Route("{id}")]
         [Authorize]
-       public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UpdateAccountDto dto)
-{
-    var user = await _accountRepository.GetUserDetail(id);
-    if (user == null) return NotFound("User not found");
+        public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UpdateAccountDto dto)
+        {
+            var userDetail = await _accountRepository.GetUserDetail(id);
+            if (userDetail == null) return NotFound(new { error = "User not found" });
 
-    var roleNames = dto.Role.Select(role => Enum.GetName(typeof(UserRoles), role)).ToList();
+            var roleNames = dto.Role.Select(role => Enum.GetName(typeof(UserRoles), role)).ToList();
 
-    bool updated = await _accountRepository.UpdateUserAsync(user, dto.Password, roleNames);
-    
-    if (!updated) return BadRequest("Failed to update user");
+            var result = await _accountRepository.UpdateUserAsync(userDetail, dto, roleNames);
 
-    return Ok("User updated successfully");
-}
+            if (!result.Success) return BadRequest(new { error = result.ErrorMessage });
+
+            return Ok(new { message = result.ErrorMessage, user = result.user });
+        }
     }
 }

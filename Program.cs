@@ -1,4 +1,4 @@
-using MBBE.Data;
+﻿using MBBE.Data;
 using Microsoft.EntityFrameworkCore;
 using MBBE;
 using MBBE.Interfaces;
@@ -56,6 +56,7 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// ✅ Correct Identity Configuration (No Duplicates!)
 builder.Services.AddIdentity<User, Role>(options =>
 {
     options.Password.RequireDigit = true;
@@ -63,8 +64,10 @@ builder.Services.AddIdentity<User, Role>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequiredLength = 12;
+    options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider; // ✅ Ensure reset tokens work
 })
-.AddEntityFrameworkStores<DataContext>();
+.AddEntityFrameworkStores<DataContext>()
+.AddDefaultTokenProviders(); // ✅ Important for password reset
 
 builder.Services.AddAuthentication(options =>
 {

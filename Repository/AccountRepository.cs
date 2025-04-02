@@ -5,6 +5,7 @@ using MBBE.Mappers;
 using MBBE.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using static MBBE.Common.Constant.Enum;
 
 namespace MBBE.Repository
@@ -58,43 +59,87 @@ namespace MBBE.Repository
             return await _userManager.FindByIdAsync(userId.ToString());
         }
 
-        public async Task<bool> UpdateUserAsync(User user, string? newPassword, List<string> roleNames)
-{
-    using (var transaction = await _dataContext.Database.BeginTransactionAsync())
-    {
-        try
+        public async Task<(bool Success, string ErrorMessage, AccountDto? user)> UpdateUserAsync(User user, UpdateAccountDto? updateDto, List<string> roles)
         {
-            // Update roles
-            var existingRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, existingRoles);
-
-            var roleResult = await _userManager.AddToRolesAsync(user, roleNames);
-            if (!roleResult.Succeeded)
-                return false;
-
-            // Update password if provided
-            if (!string.IsNullOrEmpty(newPassword))
+            using (var transaction = await _dataContext.Database.BeginTransactionAsync())
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var passwordResult = await _userManager.ResetPasswordAsync(user, token, newPassword);
-                if (!passwordResult.Succeeded)
-                    return false;
+                try
+                {
+                    // Update basic user information
+                    user.UserName = updateDto.Username;
+                    user.Email = updateDto.Email;
+                    user.ShippingAddress = updateDto.ShippingAddress;
+                    user.Citizenship = updateDto.Citizenship;
+                    user.Dob = updateDto.Dob;
+                    user.EmergencyContact = updateDto.EmergencyContact;
+                    user.BankName = updateDto.BankName;
+                    user.BankAccount = updateDto.BankAccount;
+                    user.AnnualLeave = updateDto.AnnualLeave;
+                    user.MedicalLeave = updateDto.MedicalLeave;
+                    user.UrgentLeave = updateDto.UrgentLeave;
+                    user.SpecialLeave = updateDto.SpecialLeave;
+                    user.Marriage = updateDto.Marriage;
+                    user.Hospitalisation = updateDto.Hospitalisation;
+                    user.Maternity = updateDto.Maternity;
+                    user.UnpaidLeave = updateDto.UnpaidLeave;
+                    user.PhoneNumber = updateDto.Phone;
+                    // Update roles
+                    var existingRoles = await _userManager.GetRolesAsync(user);
+                    await _userManager.RemoveFromRolesAsync(user, existingRoles);
+
+                    var roleResult = await _userManager.AddToRolesAsync(user, roles);
+                    if (!roleResult.Succeeded)
+                    {
+                        return (false, "Failed to update roles", null);
+                    }
+
+                    // Update password if provided
+                    if (!string.IsNullOrEmpty(updateDto.Password))
+                    {
+                        // Ensure the user manager does not require 2FA for password reset
+                        _userManager.Options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
+
+                        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                        var passwordResult = await _userManager.ResetPasswordAsync(user, token, updateDto.Password);
+
+                        if (!passwordResult.Succeeded)
+                        {
+                            return (false, "Failed to update password", null);
+                        }
+                    }
+
+                    // Update the user entity manually, this is important if you're modifying other fields
+                    _dataContext.Users.Update(user);
+
+                    // Save user updates to the database
+                    await _dataContext.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    var userDto = new AccountDto
+                    {
+                        UserName = user.UserName,
+                        PhoneNumber = user.PhoneNumber,
+                        Email = user.Email,
+                        Dateregister = user.Dateregister,
+                        ShippingAddress = user.ShippingAddress,
+                        EmergencyContact = user.EmergencyContact,
+                        BankAccount = user.BankAccount,
+                        BankName = user.BankName,
+                        Dob = user.Dob,
+                        Id = user.Id,
+                        Roles = roles.Select(r => Enum.Parse<UserRoles>(r)).ToList(),
+                    };
+
+                    return (true, "User updated successfully", userDto);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return (false, $"Exception: {ex.Message}", null);
+                }
             }
-
-            // Save user updates
-            var updateResult = await _userManager.UpdateAsync(user);
-            if (!updateResult.Succeeded)
-                return false;
-
-            await transaction.CommitAsync();
-            return true;
         }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync();
-            return false;
-        }
-    }
-}
+
     }
 }
