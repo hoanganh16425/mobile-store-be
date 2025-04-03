@@ -51,14 +51,14 @@ namespace MBBE.Controlers
         }
 
         [HttpPut]
-        [Route("{id}")]
+        [Route("UpdateUser/{id}")]
         [Authorize]
         public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UpdateAccountDto dto)
         {
             var userDetail = await _accountRepository.GetUserDetail(id);
             if (userDetail == null) return NotFound(new { error = "User not found" });
 
-            var roleNames = dto.Role.Select(role => Enum.GetName(typeof(UserRoles), role)).ToList();
+            var roleNames = dto.Roles.Select(role => Enum.GetName(typeof(UserRoles), role)).ToList();
 
             var result = await _accountRepository.UpdateUserAsync(userDetail, dto, roleNames);
 

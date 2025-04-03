@@ -82,7 +82,7 @@ namespace MBBE.Repository
                     user.Hospitalisation = updateDto.Hospitalisation;
                     user.Maternity = updateDto.Maternity;
                     user.UnpaidLeave = updateDto.UnpaidLeave;
-                    user.PhoneNumber = updateDto.Phone;
+                    user.PhoneNumber = updateDto.PhoneNumber;
                     // Update roles
                     var existingRoles = await _userManager.GetRolesAsync(user);
                     await _userManager.RemoveFromRolesAsync(user, existingRoles);

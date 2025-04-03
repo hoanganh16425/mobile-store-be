@@ -76,8 +76,8 @@ namespace MBBE.Dtos.Account
         [Required]
         public int UnpaidLeave { get; set; }
         [Required]
-        public string Phone { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
         [Required]
-        public List<UserRoles> Role { get; set; }
+        public List<UserRoles> Roles { get; set; }
     }
 }
